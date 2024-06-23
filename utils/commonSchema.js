@@ -88,7 +88,9 @@ export const validateApproveTransaction = [
   body('status').notEmpty().withMessage('status is required'),
 ];
 
-export const validateTallyData=[
+export const validateTallyData = [
   body('makerRefId').notEmpty().withMessage("MakerRefId is required"),
   body('checkerRefId').notEmpty().withMessage("CheckerRefId is required")
 ]
+
+export const ValidateUserTransaction = [param('page').notEmpty().withMessage('Page is required')];
