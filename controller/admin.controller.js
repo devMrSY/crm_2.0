@@ -383,7 +383,7 @@ export const approveTransaction = async (req, res) => {
 
     if (transaction) {
       transaction.status = status
-      if (transaction.status === string.Paid) {
+      if (transaction.status === approval.Paid) {
         const makerRefDoc = await TransactionRefDoc.findOne({ where: { id: makerRefId } }); // makerRefId or checkerRefId, both works for it
         transaction.paidAmt = makerRefDoc.settlementAmt
       }
