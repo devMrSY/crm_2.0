@@ -8,6 +8,7 @@ import {
   approveTransaction,
   getUser,
   updateTransaction,
+  getTallyData
 } from '../controller/admin.controller.js';
 import { authorize } from '../middleware/auth.js';
 import {
@@ -15,6 +16,7 @@ import {
   validateApproveTransaction,
   validateTransactionCreate,
   validateUserCreate,
+  validateTallyData
 } from '../utils/commonSchema.js';
 import customErrorHandler from '../utils/customErrorHandler.js';
 
@@ -46,13 +48,12 @@ export const adminRoute = (app) => {
     authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
     getAllTransactions,
   );
-  app.get(
+  app.post(
     '/api/admin/tally-data',
-    makerRefId
-    checkerRefId
+  validateTallyData,
     customErrorHandler,
     authorize([string.Admin]),
-    getTallyData(),
+    getTallyData,
   );
   // app.post(
   //   '/api/admin/approve-transaction',

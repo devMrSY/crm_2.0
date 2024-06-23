@@ -380,3 +380,31 @@ export const updateTransaction = async (req, res) => {
       );
   }
 };
+
+export const getTallyData=async(req,res)=>{
+  try{
+      const { makerRefId,checkerRefId } = req.body;
+
+      const makerRefData=await TransactionRefDoc.findAll({ where: { id: makerRefId } });
+
+      const checkerRefData=await TransactionRefDoc.findAll({ where: {id :checkerRefId } });
+
+      const tallyData={
+        makerRefDetails: makerRefData,
+        checkerRefDetails: checkerRefData,
+
+      }
+
+      return apiResponseSuccess(tallyData, true, statusCode.success, 'Tally data retrieved successfully', res);
+      
+  }catch(error){
+    return apiResponseErr(
+      error.data ?? null,
+      false,
+      error.responseCode ?? statusCode.internalServerError,
+      error.errMessage ?? error.message,
+      res
+    )
+  }
+
+}

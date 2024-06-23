@@ -86,3 +86,8 @@ export const validateApproveTransaction = [
   body('createdForId').notEmpty().withMessage('Created For ID is required'),
   body('status').isIn(['approved', 'rejected']).withMessage('Invalid status provided'),
 ];
+
+export const validateTallyData=[
+  body('makerRefId').notEmpty().withMessage("MakerRefId is required"),
+  body('checkerRefId').notEmpty().withMessage("CheckerRefId is required")
+]
