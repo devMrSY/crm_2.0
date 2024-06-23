@@ -1,4 +1,4 @@
-import { apiResponseErr, apiResponseSuccess } from '../utils/response.js';
+import { apiResponseErr, apiResponseSuccess, apiResponsePagination } from '../utils/response.js';
 import { statusCode } from '../utils/statusCodes.js';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
@@ -7,6 +7,7 @@ import User from '../models/user.model.js';
 import { approval, string } from '../constructor/string.js';
 import CustomError from '../utils/extendError.js';
 import TransactionRefDoc from '../models/transactionRefDoc.model.js';
+import { Op } from 'sequelize';
 
 dotenv.config();
 
@@ -87,25 +88,19 @@ export const getAllUsers = async (req, res) => {
     const users = await User.findAll({ where: { role: string.User } });
 
     if (users.length === 0) {
-      return res
-        .status(statusCode.badRequest)
-        .json(apiResponseErr(null, false, statusCode.badRequest, 'No user found'));
+      return apiResponseErr(null, false, statusCode.badRequest, 'No user found',res);
     }
 
-    return res
-      .status(statusCode.success)
-      .json(apiResponseSuccess(users, true, statusCode.success, 'Users retrieved successfully'));
+    return (users, true, statusCode.success, 'Users retrieved successfully',res);
   } catch (error) {
-    res
-      .status(statusCode.internalServerError)
-      .send(
+    
         apiResponseErr(
           error.data ?? null,
           false,
           error.responseCode ?? statusCode.internalServerError,
           error.errMessage ?? error.message,
-        ),
-      );
+          res
+        )
   }
 };
 
@@ -247,20 +242,54 @@ export const createTransaction = async (req, res) => {
 
 export const getAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.findAll();
+    const { page, limit, status= '',  companyName='' } = req.query;
 
-    return apiResponseSuccess(transactions, true, statusCode.success, 'All transactions retrieved successfully', res);
+    const offset = page && limit ? (page - 1) * parseInt(limit, 10) : null;
+
+    const whereClause = {}
+  if(status && companyName){
+    whereClause.status = status;
+    whereClause.companyName = companyName;
+  }
+
+    if (status) {
+      whereClause.status = status;
+    }
+    
+    if (companyName) {
+      whereClause.companyName = companyName;
+    }
+    const options = {
+      where: whereClause,
+    };
+
+    if (page && limit) {
+      options.limit = parseInt(limit, 10);
+      options.offset = offset;
+    }
+
+    const { rows: transactions, count: totalTransactions } = await Transaction.findAndCountAll(options);
+
+    const totalPages = page && limit ? Math.ceil(totalTransactions / limit) : 1;
+
+    // const transactions = await Transaction.findAll();
+
+    // return apiResponseSuccess(transactions, true, statusCode.success, 'All transactions retrieved successfully', res);
+    return apiResponsePagination(transactions, true, statusCode.success, 'All transactions retrieved successfully', {
+      totalItems: totalTransactions,
+      totalPages: totalPages,
+      page: page || 1,
+    }, res)
   } catch (error) {
-    res
-      .status(statusCode.internalServerError)
-      .send(
-        apiResponseErr(
+  
+     return apiResponseErr(
           error.data ?? null,
           false,
           error.responseCode ?? statusCode.internalServerError,
           error.errMessage ?? error.message,
-        ),
-      );
+          res
+        )
+ 
   }
 };
 
