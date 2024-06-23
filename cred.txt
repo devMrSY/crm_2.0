@@ -1,0 +1,14 @@
+{
+   "userName":  "frank",
+   "password": "admin@1234",
+   "role": "superAdmin"
+}
+
+{
+  "firstName": "checker",
+  "lastName": "01",
+  "userName": "checker01",
+  "phoneNumber": "6568596563",
+  "password": "checker@01",
+  "role": "checker"
+}
