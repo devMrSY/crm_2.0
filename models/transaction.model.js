@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../db.js';
 import { approval } from '../constructor/string.js';
 
-const Transaction = sequelize.define('entry', {
+const Transaction = sequelize.define('transaction', {
   transactionId: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -45,6 +45,10 @@ const Transaction = sequelize.define('entry', {
     type: DataTypes.UUID,
     defaultValue: null,
   },
+  paidAmt: {
+    type: DataTypes.NUMBER,
+    defaultValue: -1 // -1 means operation don't take place for this
+  }
 });
 
 export default Transaction;

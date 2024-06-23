@@ -383,6 +383,10 @@ export const approveTransaction = async (req, res) => {
 
     if (transaction) {
       transaction.status = status
+      if (transaction.status === string.Paid) {
+        const makerRefDoc = await TransactionRefDoc.findOne({ where: { id: makerRefId } }); // makerRefId or checkerRefId, both works for it
+        transaction.paidAmt = makerRefDoc.settlementAmt
+      }
       await transaction.save();
     } else {
       return apiResponseErr(null, false, statusCode.badRequest, 'Record not found', res);
