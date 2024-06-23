@@ -1,4 +1,4 @@
-import { string } from '../constructor/string.js';
+import { string } from "../constructor/string.js";
 import {
   createAdmin,
   createTransaction,
@@ -8,52 +8,63 @@ import {
   approveTransaction,
   getUser,
   updateTransaction,
-  getTallyData
-} from '../controller/admin.controller.js';
-import { authorize } from '../middleware/auth.js';
+  getTallyData,
+} from "../controller/admin.controller.js";
+import { authorize } from "../middleware/auth.js";
 import {
   validateAdminCreate,
   validateApproveTransaction,
   validateTransactionCreate,
   validateUserCreate,
-  validateTallyData
-} from '../utils/commonSchema.js';
-import customErrorHandler from '../utils/customErrorHandler.js';
+  validateTallyData,
+} from "../utils/commonSchema.js";
+import customErrorHandler from "../utils/customErrorHandler.js";
 
 export const adminRoute = (app) => {
-  app.post('/api/create-superAdmin', validateAdminCreate, customErrorHandler, createAdmin);
-  app.post('/api/admin/create-user', validateUserCreate, customErrorHandler, authorize([string.Admin]), createUser);
-  app.get(
-    '/api/admin/user-list',
+  app.post(
+    "/api/create-superAdmin",
+    validateAdminCreate,
     customErrorHandler,
-    authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
-    getAllUsers,
-  );
-  app.get(
-    '/api/admin/single-user/:userId',
-    customErrorHandler,
-    authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
-    getUser,
+    createAdmin
   );
   app.post(
-    '/api/admin/transaction-create',
+    "/api/admin/create-user",
+    validateUserCreate,
+    customErrorHandler,
+    authorize([string.Admin]),
+    createUser
+  );
+  app.get(
+    "/api/admin/user-list",
+    customErrorHandler,
+    authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
+    getAllUsers
+  );
+  app.get(
+    "/api/admin/single-user/:userId",
+    customErrorHandler,
+    authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
+    getUser
+  );
+  app.post(
+    "/api/admin/transaction-create",
     validateTransactionCreate,
     customErrorHandler,
     authorize([string.Maker, string.Checker]),
-    createTransaction,
+    createTransaction
   );
   app.get(
-    '/api/admin/transaction/list',
+    "/api/admin/transaction/list",
     // customErrorHandler,
     authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
-    getAllTransactions,
+    getAllTransactions
   );
   app.post(
-    '/api/admin/tally-data',
-  validateTallyData,
+    "/api/admin/tally-data",
+    validateTallyData,
     customErrorHandler,
     authorize([string.Admin]),
-    getTallyData,
+    getTallyData
   );
   // app.post(
   //   '/api/admin/approve-transaction',
