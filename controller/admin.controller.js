@@ -88,19 +88,19 @@ export const getAllUsers = async (req, res) => {
     const users = await User.findAll({ where: { role: string.User } });
 
     if (users.length === 0) {
-      return apiResponseErr(null, false, statusCode.badRequest, 'No user found',res);
+      return apiResponseErr(null, false, statusCode.badRequest, 'No user found', res);
     }
 
-    return (users, true, statusCode.success, 'Users retrieved successfully',res);
+    return (users, true, statusCode.success, 'Users retrieved successfully', res);
   } catch (error) {
-    
-        apiResponseErr(
-          error.data ?? null,
-          false,
-          error.responseCode ?? statusCode.internalServerError,
-          error.errMessage ?? error.message,
-          res
-        )
+
+    apiResponseErr(
+      error.data ?? null,
+      false,
+      error.responseCode ?? statusCode.internalServerError,
+      error.errMessage ?? error.message,
+      res
+    )
   }
 };
 
@@ -242,33 +242,22 @@ export const createTransaction = async (req, res) => {
 
 export const getAllTransactions = async (req, res) => {
   try {
-    const { page, limit, status= '',  companyName='' } = req.query;
+    const { page, limit, status = '', companyName = '' } = req.query;
 
     const offset = page && limit ? (page - 1) * parseInt(limit, 10) : null;
 
     const whereClause = {}
-  if(status && companyName){
-    whereClause.status = status;
-    whereClause.companyName = companyName;
-  }
+    const options = {}
 
-    if (status) {
-      whereClause.status = status;
-    }
-    
-    if (companyName) {
-      whereClause.companyName = companyName;
-    }
-    const options = {
-      where: whereClause,
-    };
+    if (status) whereClause['status'] = status;
+    if (companyName) whereClause['companyName'] = companyName;
 
     if (page && limit) {
-      options.limit = parseInt(limit, 10);
-      options.offset = offset;
+      options['limit'] = parseInt(limit, 10);
+      options['offset'] = offset;
     }
 
-    const { rows: transactions, count: totalTransactions } = await Transaction.findAndCountAll(options);
+    const { rows: transactions, count: totalTransactions } = await Transaction.findAndCountAll({ ...options, where: whereClause });
 
     const totalPages = page && limit ? Math.ceil(totalTransactions / limit) : 1;
 
@@ -281,15 +270,15 @@ export const getAllTransactions = async (req, res) => {
       page: page || 1,
     }, res)
   } catch (error) {
-  
-     return apiResponseErr(
-          error.data ?? null,
-          false,
-          error.responseCode ?? statusCode.internalServerError,
-          error.errMessage ?? error.message,
-          res
-        )
- 
+
+    return apiResponseErr(
+      error.data ?? null,
+      false,
+      error.responseCode ?? statusCode.internalServerError,
+      error.errMessage ?? error.message,
+      res
+    )
+
   }
 };
 

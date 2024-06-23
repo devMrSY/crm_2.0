@@ -42,9 +42,17 @@ export const adminRoute = (app) => {
   );
   app.get(
     '/api/admin/transaction/list',
-    customErrorHandler,
+    // customErrorHandler,
     authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
     getAllTransactions,
+  );
+  app.get(
+    '/api/admin/tally-data',
+    makerRefId
+    checkerRefId
+    customErrorHandler,
+    authorize([string.Admin]),
+    getTallyData(),
   );
   // app.post(
   //   '/api/admin/approve-transaction',
