@@ -46,7 +46,8 @@ const Transaction = sequelize.define('transaction', {
     defaultValue: null,
   },
   paidAmt: {
-    type: DataTypes.NUMBER,
+    type: DataTypes.INTEGER,
+    allowNull: false,
     defaultValue: -1 // -1 means operation don't take place for this
   }
 });
