@@ -477,17 +477,17 @@ export const getTallyData = async (req, res) => {
     const checkerRefData = await TransactionRefDoc.findOne({
       where: { id: checkerRefId },
     });
-    console.log(makerRefData,checkerRefData)
+    console.log(makerRefData, checkerRefData)
     if (!makerRefData || !checkerRefData) {
-      throw new Error(
-        `${
-          makerRefData ? "Record found for maker" : "Record not found for maker"
-        } and ${
-          checkerRefData
-            ? "Record found for checker"
-            : "Record not found for checker"
-        }`
-      );
+      throw new CustomError(
+        `${makerRefData ? "Record found for maker" : "Record not found for maker"
+        } and ${checkerRefData
+          ? "Record found for checker"
+          : "Record not found for checker"
+        }`,
+        null,
+        statusCode.badRequest
+      )
     }
 
     const tallyData = {
