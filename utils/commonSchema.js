@@ -83,8 +83,9 @@ export const validateTransactionCreate = [
 ];
 
 export const validateApproveTransaction = [
-  body('createdForId').notEmpty().withMessage('Created For ID is required'),
-  body('status').isIn(['approved', 'rejected']).withMessage('Invalid status provided'),
+  body('makerRefId').notEmpty().withMessage('makerRefId is required'),
+  body('makerRefId').notEmpty().notEmpty().withMessage('makerRefId is required'),
+  body('status').notEmpty().withMessage('status is required'),
 ];
 
 export const validateTallyData=[

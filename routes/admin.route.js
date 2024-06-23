@@ -66,13 +66,13 @@ export const adminRoute = (app) => {
     authorize([string.Admin]),
     getTallyData
   );
-  // app.post(
-  //   '/api/admin/approve-transaction',
-  //   validateApproveTransaction,
-  //   customErrorHandler,
-  //   authorize([string.Admin, string.Carrier, string.Maker, string.Checker]),
-  //   approveTransaction,
-  // );
+  app.post(
+    '/api/admin/approve-transaction',
+    validateApproveTransaction,
+    customErrorHandler,
+    authorize([string.Admin, string.Carrier]),
+    approveTransaction,
+  );
   // app.post(
   //   '/api/admin/update-transaction',
   //   validateTransactionCreate,

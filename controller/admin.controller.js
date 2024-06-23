@@ -365,80 +365,39 @@ export const getAllTransactions = async (req, res) => {
 
 export const approveTransaction = async (req, res) => {
   try {
-    const { createdForId, status } = req.body;
+    const { makerRefId, checkerRefId, status } = req.body;
     const { userId } = req.user;
 
     const user = await User.findByPk(userId);
     if (!user) {
-      return res
-        .status(statusCode.badRequest)
-        .json(
-          apiResponseErr(null, false, statusCode.badRequest, "User not found")
-        );
+      return apiResponseErr(null, false, statusCode.badRequest, 'User not found', res);
     }
 
-    const transaction = await Transaction.findOne({ where: { createdForId } });
-    if (!transaction) {
-      return res
-        .status(statusCode.badRequest)
-        .json(
-          apiResponseErr(
-            null,
-            false,
-            statusCode.badRequest,
-            "Transaction not found"
-          )
-        );
+    if (![approval.Carrier, approval.Approved, approval.Rejected].includes(status) && user.role === string.Admin) {
+      throw new CustomError(`You are only approved for ${approval.Carrier}, ${approval.Rejected} and ${approval.Approved}.`, null, 401);
+    } else if (![approval.Admin, approval.Paid].includes(status) && user.role === string.Carrier) {
+      throw new CustomError(`You are only approved for ${approval.Admin} and ${approval.Paid}.`, null, 401);
     }
 
-    if (status === "approved") {
-      if (user.role === string.Maker) {
-        transaction.status = approval.Tally;
-      } else if (user.role === string.Checker) {
-        transaction.status = approval.Carrier;
-      } else if (user.role === string.Carrier) {
-        transaction.status = approval.Admin;
-      } else if (user.role === string.Admin) {
-        transaction.status = approval.Approved;
-      }
-    } else if (status === "rejected") {
-      transaction.status = approval.Rejected;
+    const transaction = await Transaction.findOne({ where: { makerRefId, checkerRefId } });
+
+    if (transaction) {
+      transaction.status = status
+      await transaction.save();
     } else {
-      return res
-        .status(statusCode.badRequest)
-        .json(
-          apiResponseErr(
-            null,
-            false,
-            statusCode.badRequest,
-            "Invalid status provided"
-          )
-        );
+      return apiResponseErr(null, false, statusCode.badRequest, 'Record not found', res);
     }
 
-    await transaction.save();
+    return apiResponseSuccess(transaction, true, statusCode.success, 'Transaction status updated successfully', res);
 
-    return res
-      .status(statusCode.success)
-      .json(
-        apiResponseSuccess(
-          transaction,
-          true,
-          statusCode.success,
-          "Transaction status updated successfully"
-        )
-      );
   } catch (error) {
-    res
-      .status(statusCode.internalServerError)
-      .send(
-        apiResponseErr(
-          error.data ?? null,
-          false,
-          error.responseCode ?? statusCode.internalServerError,
-          error.errMessage ?? error.message
-        )
-      );
+    apiResponseErr(
+      error.data ?? null,
+      false,
+      error.responseCode ?? statusCode.internalServerError,
+      error.errMessage ?? error.message,
+      res
+    )
   }
 };
 

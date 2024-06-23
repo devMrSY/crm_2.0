@@ -15,6 +15,7 @@ class status {
   Admin = 'awaiting_admin_final_approval';
   Approved = 'approved';
   Rejected = 'rejected';
+  Paid = "paid"
 }
 
 export const approval = new status();

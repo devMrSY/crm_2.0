@@ -33,6 +33,7 @@ const Transaction = sequelize.define('entry', {
       approval.Admin,
       approval.Approved,
       approval.Rejected,
+      approval.Paid,
     ),
     defaultValue: approval.Tally,
   },
